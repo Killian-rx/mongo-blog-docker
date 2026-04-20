@@ -1,4 +1,4 @@
-# 🐳 Mongo Blog Docker
+# Mongo Blog Docker
 
 **Tag publié :** `kikslamenace/mongo-blog:1.0.0` — [Docker Hub](https://hub.docker.com/r/kikslamenace/mongo-blog)
 
