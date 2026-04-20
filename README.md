@@ -41,7 +41,6 @@ docker build -t kikslamenace/mongo-blog:1.0.0 .
 docker run -d \
   --name blog-mongo \
   --env-file .env \
-  -p 27017:27017 \
   kikslamenace/mongo-blog:1.0.0
 ```
 ### Script automatisé
