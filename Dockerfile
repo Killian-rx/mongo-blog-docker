@@ -1,7 +1,7 @@
-FROM mongo:7.0
+FROM mongodb/mongodb-community-server:8.0-ubi8-slim
 
-COPY --chown=mongodb:mongodb init-scripts/ /docker-entrypoint-initdb.d/
+COPY --chown=mongod:mongod init-scripts/ /docker-entrypoint-initdb.d/
 
-USER mongodb
+USER mongod
 
 EXPOSE 27017
