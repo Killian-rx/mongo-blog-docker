@@ -1,22 +1,6 @@
 # 🐳 Mongo Blog Docker
 
-> Image Docker personnalisée basée sur MongoDB, pré-configurée pour un moteur de blog, avec validation de schéma stricte et exécution en utilisateur non-root.
-
 **Tag publié :** `kikslamenace/mongo-blog:1.0.0` — [Docker Hub](https://hub.docker.com/r/kikslamenace/mongo-blog)
-
----
-## Structure du projet
-
-```
-.
-├── Dockerfile                 # Image basée sur mongo:7.0
-├── init-scripts/
-│   └── init-blog.js          # Création collection + validator + seed 5 posts
-├── check-status.sh            # Script de vérification (santé + non-root + data)
-├── .env.example               # Modèle de variables d'env (à copier en .env)
-├── .gitignore
-└── README.md
-```
 
 ## Démarrage rapide
 
@@ -43,15 +27,3 @@ docker run -d \
   --env-file .env \
   kikslamenace/mongo-blog:1.0.0
 ```
-### Script automatisé
-
-```bash
-chmod +x check-status.sh
-./check-status.sh
-```
-
-Le script vérifie :
-- Le conteneur tourne
-- L'utilisateur interne n'est pas `root`
-- Le process `mongod` n'est pas exécuté par `root`
-- La base `blog_db` répond et contient ≥ 5 posts
