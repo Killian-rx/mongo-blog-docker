@@ -1,0 +1,90 @@
+services:
+  db_mongo:
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    restart: on-failure
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - ./mongo/init-scripts:/docker-entrypoint-initdb.d/:ro
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet -u $$MONGO_INITDB_ROOT_USERNAME -p $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval \"db = db.getSiblingDB('blog_db'); quit(db.posts.countDocuments({}) === 5 ? 0 : 1)\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+
+  db_mysql:
+    image: mysql:8.0
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./sql-scripts:/docker-entrypoint-initdb.d/:ro
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "test \"$(mysql -uroot -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -Nse \"SELECT COUNT(*) FROM utilisateurs;\")\" = \"4\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
+
+  admin_mongo:
+    image: mongo-express:1
+    restart: on-failure
+    depends_on:
+      db_mongo:
+        condition: service_healthy
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: db_mongo
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+    ports:
+      - 8081:8081
+
+  admin_mysql:
+    image: adminer
+    restart: on-failure
+    depends_on:
+      db_mysql:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 8000:8000
+    environment:
+      MYSQL_HOST: db_mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MONGO_HOST: db_mongo
+      MONGO_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_USER: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    depends_on:
+      db_mysql:
+        condition: service_healthy
+      db_mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/users'); urllib.request.urlopen('http://127.0.0.1:8000/posts')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongo-data:
+  mysql-data:
