@@ -47,6 +47,12 @@ services:
       ME_CONFIG_MONGODB_AUTH_DATABASE: admin
     ports:
       - 8081:8081
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8081"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   admin_mysql:
     image: adminer
@@ -56,12 +62,20 @@ services:
         condition: service_healthy
     ports:
       - 8080:8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
     restart: on-failure
+    volumes:
+      - ./api:/api
     ports:
       - 8000:8000
     environment:
