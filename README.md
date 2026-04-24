@@ -1,12 +1,5 @@
 # TP Stack Hybride Docker Compose
 
-Projet multi-services avec MongoDB, MySQL, FastAPI, mongo-express et adminer.
-
-## Prérequis
-
-- Docker Desktop
-- Fichier `.env` à la racine
-
 ## Lancer le projet
 
 ```bash
