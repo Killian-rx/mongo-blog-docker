@@ -12,7 +12,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build image for scanning
-        run: docker build -t my-app:1.0.0 -f ./Dockerfile .
+        
+      - name: Build image for server
+        run: docker build -t mongo-blog-docker-api:1.0.0 -f .api/Dockerfile .
+
+      - name: Build image for mongo
+        run: docker build -t mongo-blog-docker-mongo:1.0.0 -f .mongo/Dockerfile .  
