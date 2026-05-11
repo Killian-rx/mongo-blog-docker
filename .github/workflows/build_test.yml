@@ -1,9 +1,9 @@
 name: Build and Test Application
 on: 
   push:
-    branches: [master]
+    branches: [activite2]
   pull_request:
-    branches: [master]
+    branches: [activite2]
 
 jobs:
   build_test:
