@@ -28,7 +28,7 @@ services:
       - ./sql-scripts:/docker-entrypoint-initdb.d/:ro
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "test \"$(mysql -uroot -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -Nse \"SELECT COUNT(*) FROM utilisateurs;\")\" = \"4\""]
+      test: ["CMD-SHELL", "mysql -uroot -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -Nse 'SELECT COUNT(*) FROM utilisateurs;' 2>/dev/null | grep -qx 4"]
       interval: 10s
       timeout: 5s
       retries: 10
