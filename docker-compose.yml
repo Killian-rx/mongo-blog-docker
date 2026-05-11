@@ -31,8 +31,8 @@ services:
       test: ["CMD-SHELL", "test \"$(mysql -uroot -p$$MYSQL_ROOT_PASSWORD -D $$MYSQL_DATABASE -Nse \"SELECT COUNT(*) FROM utilisateurs;\")\" = \"4\""]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 25s
+      retries: 10
+      start_period: 60s
 
   admin_mongo:
     image: mongo-express:1
